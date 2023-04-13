@@ -1,43 +1,57 @@
 {
-  "name": "iubenda-module",
-  "version": "0.1.2",
+  "name": "nuxt-iubenda",
+  "version": "0.2.0",
   "description": "Easily integrate Iubenda with Nuxt.js",
   "repository": "https://github.com/maneuver-agency/iubenda-nuxt-module",
   "license": "MIT",
   "contributors": [
     {
       "name": "David De Coninck <david@maneuver.be>"
+    },
+    {
+      "name": "Wouter Vernaillen <wouter@vernaillen.dev>"
     }
   ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
   "files": [
-    "lib"
+    "dist"
   ],
-  "main": "lib/module.js",
   "scripts": {
-    "dev": "nuxt example",
-    "lint": "eslint --ext .js,.vue .",
-    "release": "yarn test && standard-version && git push --follow-tags && npm publish",
-    "test": "yarn lint && jest"
+    "prepack": "nuxt-module-build",
+    "dev": "nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
+    "serve": "nuxi build playground && NODE_ENV=production node playground/.output/server/index.mjs",
+    "lint": "eslint --ext .ts,.vue .",
+    "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
+    "test": "pnpm lint && vitest run",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
+    "@nuxt/kit": "^3.4.0",
     "lodash.template": "^4.5.0",
     "object-assign-deep": "^0.4.0"
   },
   "devDependencies": {
-    "@babel/core": "latest",
-    "@babel/preset-env": "latest",
-    "@commitlint/cli": "latest",
-    "@commitlint/config-conventional": "latest",
-    "@nuxtjs/eslint-config": "latest",
-    "@nuxtjs/i18n": "^7.2.0",
-    "@nuxtjs/module-test-utils": "latest",
-    "babel-eslint": "latest",
-    "babel-jest": "latest",
+    "@nuxt/devtools": "^0.4.0",
+    "@nuxt/eslint-config": "latest",
+    "@nuxt/module-builder": "^0.3.0",
+    "@nuxt/schema": "^3.4.0",
+    "@nuxt/test-utils": "^3.4.0",
+    "@nuxtjs/i18n": "8.0.0-beta.10",
+    "changelogen": "^0.5.3",
     "eslint": "latest",
-    "husky": "latest",
-    "jest": "latest",
-    "nuxt-edge": "latest",
-    "standard-version": "latest"
+    "nuxt": "^3.4.0",
+    "vitest": "^0.30.1"
   },
   "publishConfig": {
     "access": "public"

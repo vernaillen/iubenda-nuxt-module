@@ -1,19 +1,25 @@
-export default function ({ app }, inject) {
-  
-  const i18nSettings = JSON.parse(`<%= JSON.stringify(options.i18n) %>`)
+import { defineNuxtPlugin, useRuntimeConfig } from '#app'
+import { useHead } from '@unhead/vue'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  const options = useRuntimeConfig().public.iubenda
+
+  const i18nSettings = useRuntimeConfig().public.iubenda.i18n
   let localeCookiePolicyId = null
 
-  if (app.i18n && app.i18n.locale) {
-    const { locale } = app.i18n
+  if (nuxtApp.$i18n && i18nSettings) {
+    const { locale } = nuxtApp.$i18n.locale
     if (i18nSettings[locale]) {
       localeCookiePolicyId = i18nSettings[locale].cookiePolicyId
     }
+  } else {
+    console.debug('i18n not detected')
   }
 
-  const linksStyle = '<%= options.links.style %>'
-  const whiteLabel = '<%= options.links.whiteLabel %>'
-  const embed = '<%= options.links.embed %>'
-  const cookiePolicyId = localeCookiePolicyId || '<%= options.config.cookiePolicyId %>'
+  const linksStyle = options.links.style
+  const whiteLabel = options.links.whiteLabel
+  const embed = options.links.embed
+  const cookiePolicyId = localeCookiePolicyId || options.config.cookiePolicyId
   const baseUrl = 'https://www.iubenda.com'
   const apiUrl = `${baseUrl}/api`
   const privacyPolicyUrl = `${baseUrl}/privacy-policy/${cookiePolicyId}`
@@ -49,6 +55,9 @@ export default function ({ app }, inject) {
     getPrivacyPolicyLinkHtml,
     getCookiePolicyLinkHtml,
   }
+  nuxtApp.provide('iubenda', iub)
 
-  inject('iubenda', iub)
-}
+  useHead({
+    script: options.head.script
+  })
+})
